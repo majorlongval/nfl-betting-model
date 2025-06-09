@@ -1,0 +1,28 @@
+[project]
+name = "nfl-betting-model"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10, <3.13"
+dependencies = [
+  "pandas",
+  "scikit-learn",
+  "optuna",
+  "requests",
+  "nfl-data-py",
+  "seaborn",
+  "pytest"
+]
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = []
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["nfl_betting_app"]

@@ -1,0 +1,23 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+.venv/
+venv/
+ENV/
+env/
+# uv's lock file
+uv.lock
+
+# Data files - We don't want to commit large CSVs to Git
+data/
+*.csv
+
+# Notebook checkpoints
+.ipynb_checkpoints
+
+# IDE / Editor specific
+.vscode/
+.idea/
