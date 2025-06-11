@@ -21,3 +21,5 @@ data/
 # IDE / Editor specific
 .vscode/
 .idea/
+client_secrets.json
+mycreds.txt

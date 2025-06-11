@@ -11,7 +11,8 @@ dependencies = [
   "requests",
   "nfl-data-py",
   "seaborn",
-  "pytest"
+  "pytest",
+  "PyDrive2"
 ]
 [build-system]
 requires = ["hatchling"]
