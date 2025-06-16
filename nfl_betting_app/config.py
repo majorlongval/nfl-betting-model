@@ -2,13 +2,17 @@ import os
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 DATA_DIR = os.path.join(PROJECT_ROOT, "data")
+RAW_DATA_DIR = os.path.join(DATA_DIR, "raw")
+PROCESSED_DATA_DIR = os.path.join(DATA_DIR, "processed")
 
 GDRIVE_FOLDER_ID = "1Z5qgcNC87J-lpsCeB0Zy3ndYUfbwDPqj"
 
-GAMES_DB_FILENAME = "nfl_games_database.csv"
-LOCAL_GAMES_DB_PATH = os.path.join(DATA_DIR, GAMES_DB_FILENAME)
+RAW_GAMES_DB_FILENAME = "nfl_games_database_raw.csv"
+RAW_GAMES_DB_PATH = os.path.join(RAW_DATA_DIR, RAW_GAMES_DB_FILENAME)
 
-STATS_DB_FILENAME = "nfl_team_stats.csv"
-LOCAL_STATS_DB_PATH = os.path.join(DATA_DIR, STATS_DB_FILENAME)
+RAW_STATS_DB_FILENAME = "nfl_weekly_player_stats_raw.csv"
+RAW_STATS_DB_PATH = os.path.join(RAW_DATA_DIR, RAW_STATS_DB_FILENAME)
 
-START_YEAR = 2006
+MODEL_FEATURE_SET_PATH = os.path.join(PROCESSED_DATA_DIR, "nfl_model_features.csv")
+
+START_YEAR = 2007

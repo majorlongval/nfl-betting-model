@@ -1,0 +1,33 @@
+import pandas as pd
+import os
+import nfl_betting_app.config as config
+
+
+def load_game_data() -> pd.DataFrame:
+    """
+    Loads the primary games and odds database from the local data folder.
+    Raises FileNotFoundError if the database does not exist.
+    """
+    if not os.path.exists(config.LOCAL_GAMES_DB_PATH):
+        raise FileNotFoundError(
+            f"ERROR: Games database not found at '{config.LOCAL_GAMES_DB_PATH}'. "
+            "Please run the data_retriever.py script first to create it."
+        )
+
+    print("Loading games database from local CSV...")
+    return pd.read_csv(config.LOCAL_GAMES_DB_PATH, low_memory=False)
+
+
+def load_weekly_player_stats_data() -> pd.DataFrame:
+    """
+    Loads the weekly player stats database from the local data folder.
+    Raises FileNotFoundError if the database does not exist.
+    """
+    if not os.path.exists(config.LOCAL_STATS_DB_PATH):
+        raise FileNotFoundError(
+            f"ERROR: Weekly player stats database not found at '{config.LOCAL_STATS_DB_PATH}'. "
+            "This file is created by the feature_engineering.py or a dedicated retriever script."
+        )
+
+    print("Loading weekly player stats from local CSV...")
+    return pd.read_csv(config.LOCAL_STATS_DB_PATH, low_memory=False)
