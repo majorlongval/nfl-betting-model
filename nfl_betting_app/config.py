@@ -5,7 +5,8 @@ DATA_DIR = os.path.join(PROJECT_ROOT, "data")
 RAW_DATA_DIR = os.path.join(DATA_DIR, "raw")
 PROCESSED_DATA_DIR = os.path.join(DATA_DIR, "processed")
 
-GDRIVE_FOLDER_ID = "1Z5qgcNC87J-lpsCeB0Zy3ndYUfbwDPqj"
+GDRIVE_RAW_DATA_FOLDER_ID = "1T856I1m0_EsNkgT_kyo5WF_CX6RUHt87"
+GDRIVE_PROCESSED_DATA_FOLDER_ID = "1EJihhAxpEOHDpF6l3AmsUAjgi_VW1EU_"
 
 RAW_GAMES_DB_FILENAME = "nfl_games_database_raw.csv"
 RAW_GAMES_DB_PATH = os.path.join(RAW_DATA_DIR, RAW_GAMES_DB_FILENAME)
