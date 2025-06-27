@@ -6,16 +6,10 @@ from nfl_betting_app.google_drive_handler import (
     download_file_from_drive,
     upload_file_to_drive,
 )
-from nfl_betting_app.data_retriever import (
-    update_raw_game_data,
-    update_raw_weekly_stats_data,
-)
-from nfl_betting_app.data_handler import (
-    load_raw_game_data,
-    load_raw_weekly_player_stats_data,
-)
-from nfl_betting_app.feature_engineering import create_point_in_time_features
-import nfl_betting_app.config as config
+from nfl_betting_app.data_retriever import update_raw_pbp_data
+from nfl_betting_app.data_handler import load_raw_pbp_data
+from nfl_betting_app.feature_engineering import create_final_feature_set
+import nfl_betting_app.config as config # I noticed this was create_point_in_time_features, but the file has create_final_feature_set
 import os
 
 
@@ -32,17 +26,11 @@ def run_data_pipeline():
     # === STEP 1: Sync RAW Data from Google Drive ===
     print("\n[Step 1/4] Syncing RAW data from Google Drive...")
     if config.GDRIVE_RAW_DATA_FOLDER_ID != "YOUR_RAW_DATA_FOLDER_ID_HERE":
-        # Download the raw games DB
+        # Download the raw PBP DB
         download_file_from_drive(
             drive_folder_id=config.GDRIVE_RAW_DATA_FOLDER_ID,
-            file_name=config.RAW_GAMES_DB_FILENAME,
-            local_save_path=config.RAW_GAMES_DB_PATH,
-        )
-        # Download the raw weekly stats DB
-        download_file_from_drive(
-            drive_folder_id=config.GDRIVE_RAW_DATA_FOLDER_ID,
-            file_name=config.RAW_STATS_DB_FILENAME,
-            local_save_path=config.RAW_STATS_DB_PATH,
+            file_name=config.RAW_PBP_DB_FILENAME,
+            local_save_path=config.RAW_PBP_DB_PATH,
         )
     else:
         print(
@@ -51,16 +39,15 @@ def run_data_pipeline():
 
     # === STEP 2: Update RAW Data from Web ===
     print("\n[Step 2/4] Updating local RAW data files from the web...")
-    update_raw_game_data()
-    update_raw_weekly_stats_data()
+    update_raw_pbp_data()
 
     # === STEP 3: Generate PROCESSED Features ===
     print("\n[Step 3/4] Generating PROCESSED features...")
     try:
-        games_df = load_raw_game_data()
-        stats_df = load_raw_weekly_player_stats_data()
+        # The PBP data is now the single source of truth for game and play information.
+        pbp_df = load_raw_pbp_data()
 
-        feature_df = create_point_in_time_features(games_df, stats_df)
+        feature_df = create_final_feature_set(pbp_df)
 
         os.makedirs(config.PROCESSED_DATA_DIR, exist_ok=True)
         feature_df.to_csv(config.MODEL_FEATURE_SET_PATH, index=False)
@@ -78,8 +65,7 @@ def run_data_pipeline():
     print("\n[Step 4/4] Uploading all updated data back to Google Drive...")
     # Upload raw files
     if config.GDRIVE_RAW_DATA_FOLDER_ID != "YOUR_RAW_DATA_FOLDER_ID_HERE":
-        upload_file_to_drive(config.RAW_GAMES_DB_PATH, config.GDRIVE_RAW_DATA_FOLDER_ID)
-        upload_file_to_drive(config.RAW_STATS_DB_PATH, config.GDRIVE_RAW_DATA_FOLDER_ID)
+        upload_file_to_drive(config.RAW_PBP_DB_PATH, config.GDRIVE_RAW_DATA_FOLDER_ID)
     else:
         print("WARNING: Raw data Google Drive ID not set. Skipping raw file upload.")
 
@@ -115,4 +101,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
