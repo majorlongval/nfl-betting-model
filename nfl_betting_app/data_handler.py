@@ -2,7 +2,6 @@ import pandas as pd
 import os
 import nfl_betting_app.config as config
 
-
 def load_raw_game_data() -> pd.DataFrame:
     """
     Loads the raw games and odds database from the local raw data folder.
@@ -16,7 +15,6 @@ def load_raw_game_data() -> pd.DataFrame:
 
     print("Loading raw games database from local CSV...")
     return pd.read_csv(config.RAW_GAMES_DB_PATH, low_memory=False)
-
 
 def load_raw_weekly_player_stats_data() -> pd.DataFrame:
     """

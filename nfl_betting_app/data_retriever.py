@@ -1,8 +1,7 @@
 import pandas as pd
 import nfl_data_py as nfl
-from datetime import datetime, date, timedelta
+from datetime import date, timedelta
 import os
-import calendar
 import nfl_betting_app.config as config
 
 
