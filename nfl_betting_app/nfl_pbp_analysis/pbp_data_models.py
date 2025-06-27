@@ -7,13 +7,27 @@ class TeamSide(Enum):
     HOME = "HOME"
     AWAY = "AWAY"
 
+class TouchdownType(Enum):
+    PASSING = "PASSING"
+    RUSHING = "RUSHING"
+    DEFENCE = "DEFENCE"
+    SPECIAL_TEAMS = "SPECIAL"
+
+class Touchdown(BaseModel):
+    type: TouchdownType
+    scoring_team: TeamSide
+    player_name: Optional[str] = None
+
 class Play(BaseModel):
     posteam: Optional[str] = None
     down: Optional[int] = None
+    touchdown: Optional[Touchdown] = None
     third_down_converted: bool = False
     third_down_failed: bool = False
     fourth_down_converted: bool = False
     fourth_down_failed: bool = False
+    rushing_yards: Optional[float] = None
+    passing_yards: Optional[float] = None
 
 class Game(BaseModel):
     game_id: str

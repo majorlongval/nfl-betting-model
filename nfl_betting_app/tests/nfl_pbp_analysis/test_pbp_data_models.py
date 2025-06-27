@@ -8,12 +8,12 @@ from nfl_betting_app.nfl_pbp_analysis.pbp_data_models import Play, Game
 def sample_plays() -> List[Play]:
     """Provides a sample list of Play objects for testing."""
     return [
-        Play(posteam='KC', down=1, third_down_converted=False, third_down_failed=False),
-        Play(posteam='KC', down=2, third_down_converted=False, third_down_failed=False),
-        Play(posteam='KC', down=3, third_down_converted=True, third_down_failed=False),
-        Play(posteam='SF', down=1, third_down_converted=False, third_down_failed=False),
-        Play(posteam='SF', down=2, third_down_converted=False, third_down_failed=False),
-        Play(posteam='SF', down=3, third_down_converted=False, third_down_failed=True),
+        Play(posteam='KC', down=1, third_down_converted=False, third_down_failed=False, rushing_yards=4, passing_yards=0),
+        Play(posteam='KC', down=2, third_down_converted=False, third_down_failed=False, rushing_yards=0, passing_yards=10),
+        Play(posteam='KC', down=3, third_down_converted=True, third_down_failed=False, rushing_yards=0, passing_yards=5),
+        Play(posteam='SF', down=1, third_down_converted=False, third_down_failed=False, rushing_yards=8, passing_yards=0),
+        Play(posteam='SF', down=2, third_down_converted=False, third_down_failed=False, rushing_yards=0, passing_yards=0),
+        Play(posteam='SF', down=3, third_down_converted=False, third_down_failed=True, rushing_yards=2, passing_yards=0),
     ]
 
 
@@ -46,6 +46,8 @@ def test_play_creation():
     assert play.down == 1
     assert play.third_down_converted is False
     assert play.third_down_failed is False
+    assert play.rushing_yards is None
+    assert play.passing_yards is None
 
 
 def test_play_creation_defaults():
@@ -55,6 +57,8 @@ def test_play_creation_defaults():
     assert play.down is None
     assert play.third_down_converted is False
     assert play.third_down_failed is False
+    assert play.rushing_yards is None
+    assert play.passing_yards is None
 
 
 def test_game_creation(sample_game: Game, sample_plays: List[Play]):

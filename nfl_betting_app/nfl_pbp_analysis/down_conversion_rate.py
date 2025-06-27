@@ -32,12 +32,12 @@ def _calculate_down_conversion_rate_generic(
 
     return {TeamSide.HOME: home_rate, TeamSide.AWAY: away_rate}
 
-def calculate_third_down_conversion_rate(game: Game) -> Dict[TeamSide, float]:
+def third_down_conversion_rate(game: Game) -> Dict[TeamSide, float]:
     return _calculate_down_conversion_rate_generic(
         game, 3, 'third_down_converted', 'third_down_failed'
     )
 
-def calculate_fourth_down_conversion_rate(game: Game) -> Dict[TeamSide, float]:
+def fourth_down_conversion_rate(game: Game) -> Dict[TeamSide, float]:
     return _calculate_down_conversion_rate_generic(
         game, 4, 'fourth_down_converted', 'fourth_down_failed'
     )

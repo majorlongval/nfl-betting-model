@@ -4,8 +4,8 @@ import pytest
 from nfl_betting_app.nfl_pbp_analysis.pbp_data_models import TeamSide
 from nfl_betting_app.nfl_pbp_analysis.pbp_data_models_factories import game_from_single_game_dataframe
 from nfl_betting_app.nfl_pbp_analysis.down_conversion_rate import (
-    calculate_third_down_conversion_rate,
-    calculate_fourth_down_conversion_rate
+    third_down_conversion_rate,
+    fourth_down_conversion_rate
 )
 
 @pytest.fixture
@@ -24,6 +24,16 @@ def sample_nfl_py_dataframe() -> pd.DataFrame:
         'third_down_failed': [False, True, True, False, False, False, False, False, False],
         'fourth_down_converted': [False, False, False, False, True, False, False, True, False],
         'fourth_down_failed': [False, False, False, False, False, True, True, False, False],
+        'rushing_yards': [0, 0, 0, 0, 0, 0, 0, 0, 8],
+        'passing_yards': [5, -2, 10, 7, 3, -1, 0, 5, 0],
+        # Raw touchdown columns for the factory
+        'pass_touchdown': [0, 0, 0, 1, 0, 0, 0, 0, 0],
+        'rush_touchdown': [0, 0, 0, 0, 0, 0, 0, 1, 0],
+        'return_touchdown': [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        'interception': [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        'fumble_lost': [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        'td_team': [None, None, None, 'CIN', None, None, None, 'CIN', None],
+        'td_player_name': [None, None, None, 'J.Chase', None, None, None, 'J.Mixon', None],
         # Include other common nfl-py columns to make it more realistic,
         # even if not directly used by our factory for Play objects
         'play_id': range(1, 10),
@@ -48,7 +58,7 @@ def test_full_conversion_rate_pipeline(sample_nfl_py_dataframe: pd.DataFrame):
     assert len(game.plays) == 9
 
     # Step 2: Calculate Third Down Conversion Rates
-    third_down_rates = calculate_third_down_conversion_rate(game)
+    third_down_rates = third_down_conversion_rate(game)
 
     # Expected values:
     # BAL (Away): 1 converted (Play 1), 1 failed (Play 3) -> 1/2 = 0.5
@@ -57,7 +67,7 @@ def test_full_conversion_rate_pipeline(sample_nfl_py_dataframe: pd.DataFrame):
     assert pytest.approx(third_down_rates[TeamSide.HOME]) == 0.5
 
     # Step 3: Calculate Fourth Down Conversion Rates
-    fourth_down_rates = calculate_fourth_down_conversion_rate(game)
+    fourth_down_rates = fourth_down_conversion_rate(game)
 
     # Expected values:
     # BAL (Away): 1 converted (Play 5), 1 failed (Play 7) -> 1/2 = 0.5

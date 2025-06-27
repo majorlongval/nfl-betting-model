@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from nfl_betting_app.nfl_pbp_analysis.pbp_data_models import Game, Play
+from nfl_betting_app.nfl_pbp_analysis.pbp_data_models import Game, Play, TouchdownType, TeamSide
 from nfl_betting_app.nfl_pbp_analysis.pbp_data_models_factories import (
     game_from_single_game_dataframe, REQUIRED_COLS
 )
@@ -18,7 +18,18 @@ def sample_game_df() -> pd.DataFrame:
         'down': [1, 2, 3],
         'third_down_converted': [False, False, True],
         'third_down_failed': [False, False, False],
-        'extra_col': [10, 20, 30]  # To ensure extra columns are ignored
+        'fourth_down_converted': [False, False, False],
+        'fourth_down_failed': [False, False, False],
+        'rushing_yards': [4, 0, 0],
+        'passing_yards': [0, 12, 15],
+        'pass_touchdown': [0, 0, 1],
+        'rush_touchdown': [0, 0, 0],
+        'return_touchdown': [0, 0, 0],
+        'interception': [0, 0, 0],
+        'fumble_lost': [0, 0, 0],
+        'td_team': [None, None, 'SF'],
+        'td_player_name': [None, None, 'G.Kittle'],
+        'extra_col': [10, 20, 30],  # To ensure extra columns are ignored
     }
     return pd.DataFrame(data)
 
@@ -33,25 +44,30 @@ def test_game_from_single_game_dataframe_success(sample_game_df: pd.DataFrame):
     assert game.away_team == 'SF'
     assert len(game.plays) == 3
 
-    # Check the first play
+    # Check the first play (no touchdown)
     assert isinstance(game.plays[0], Play)
     assert game.plays[0].posteam == 'KC'
     assert game.plays[0].down == 1
     assert not game.plays[0].third_down_converted
     assert not game.plays[0].third_down_failed
+    assert game.plays[0].touchdown is None
 
-    # Check the last play
+    # Check the last play (with touchdown)
     assert game.plays[2].posteam == 'SF'
     assert game.plays[2].down == 3
     assert game.plays[2].third_down_converted
     assert not game.plays[2].third_down_failed
+    assert game.plays[2].touchdown is not None
+    assert game.plays[2].touchdown.type == TouchdownType.PASSING
+    assert game.plays[2].touchdown.scoring_team == TeamSide.AWAY  # SF is away team
+    assert game.plays[2].touchdown.player_name == 'G.Kittle'
 
 
 def test_game_from_dataframe_missing_columns(sample_game_df: pd.DataFrame):
     """Tests that a ValueError is raised if required columns are missing."""
     df_missing_col = sample_game_df.drop(columns=['down'])
 
-    with pytest.raises(ValueError, match="Missing cols to form a Game"):
+    with pytest.raises(ValueError, match=r"Missing required columns to form a Game: \['down'\]"):
         game_from_single_game_dataframe(df_missing_col)
 
 
@@ -65,6 +81,17 @@ def test_game_from_dataframe_multiple_games():
         'down': [1, 1],
         'third_down_converted': [False, False],
         'third_down_failed': [False, False],
+        'fourth_down_converted': [False, False],
+        'fourth_down_failed': [False, False],
+        'rushing_yards': [0, 5],
+        'passing_yards': [10, 0],
+        'pass_touchdown': [0, 0],
+        'rush_touchdown': [0, 0],
+        'return_touchdown': [0, 0],
+        'interception': [0, 0],
+        'fumble_lost': [0, 0],
+        'td_team': [None, None],
+        'td_player_name': [None, None],
     }
     df_multiple_games = pd.DataFrame(df_multiple_games_data)
 

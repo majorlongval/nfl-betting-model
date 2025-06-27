@@ -2,8 +2,8 @@ import pytest
 from typing import List
 from nfl_betting_app.nfl_pbp_analysis.pbp_data_models import Game, Play, TeamSide
 from nfl_betting_app.nfl_pbp_analysis.down_conversion_rate import (
-    calculate_third_down_conversion_rate,
-    calculate_fourth_down_conversion_rate
+    third_down_conversion_rate,
+    fourth_down_conversion_rate
 )
 
 @pytest.fixture
@@ -113,7 +113,7 @@ def game_fourth_down_away_no_attempts() -> Game:
 
 def test_third_down_conversion_rate_standard(game_with_mixed_downs: Game):
     """Tests third down conversion rate with a mix of conversions and failures."""
-    rates = calculate_third_down_conversion_rate(game_with_mixed_downs)
+    rates = third_down_conversion_rate(game_with_mixed_downs)
     # KC: 2 converted, 1 failed -> 2/3 = 0.666...
     # SF: 1 converted, 1 failed -> 1/2 = 0.5
     assert pytest.approx(rates[TeamSide.HOME]) == 2/3
@@ -121,7 +121,7 @@ def test_third_down_conversion_rate_standard(game_with_mixed_downs: Game):
 
 def test_third_down_conversion_rate_only_third_downs(game_only_third_downs: Game):
     """Tests third down conversion rate with only third down plays."""
-    rates = calculate_third_down_conversion_rate(game_only_third_downs)
+    rates = third_down_conversion_rate(game_only_third_downs)
     # KC: 1 converted, 1 failed -> 1/2 = 0.5
     # SF: 1 converted, 0 failed -> 1/1 = 1.0
     assert pytest.approx(rates[TeamSide.HOME]) == 0.5
@@ -129,25 +129,25 @@ def test_third_down_conversion_rate_only_third_downs(game_only_third_downs: Game
 
 def test_third_down_conversion_rate_home_no_attempts(game_third_down_home_no_attempts: Game):
     """Tests third down conversion rate when home team has no attempts."""
-    rates = calculate_third_down_conversion_rate(game_third_down_home_no_attempts)
+    rates = third_down_conversion_rate(game_third_down_home_no_attempts)
     assert rates[TeamSide.HOME] == 0.0
     assert pytest.approx(rates[TeamSide.AWAY]) == 0.5 # 1/2
 
 def test_third_down_conversion_rate_away_no_attempts(game_third_down_away_no_attempts: Game):
     """Tests third down conversion rate when away team has no attempts."""
-    rates = calculate_third_down_conversion_rate(game_third_down_away_no_attempts)
+    rates = third_down_conversion_rate(game_third_down_away_no_attempts)
     assert pytest.approx(rates[TeamSide.HOME]) == 0.5 # 1/2
     assert rates[TeamSide.AWAY] == 0.0
 
 def test_third_down_conversion_rate_no_attempts_at_all(game_no_conversion_attempts: Game):
     """Tests third down conversion rate when no 3rd down attempts occur."""
-    rates = calculate_third_down_conversion_rate(game_no_conversion_attempts)
+    rates = third_down_conversion_rate(game_no_conversion_attempts)
     assert rates[TeamSide.HOME] == 0.0
     assert rates[TeamSide.AWAY] == 0.0
 
 def test_third_down_conversion_rate_empty_game(empty_game: Game):
     """Tests third down conversion rate with an empty game."""
-    rates = calculate_third_down_conversion_rate(empty_game)
+    rates = third_down_conversion_rate(empty_game)
     assert rates[TeamSide.HOME] == 0.0
     assert rates[TeamSide.AWAY] == 0.0
 
@@ -155,7 +155,7 @@ def test_third_down_conversion_rate_empty_game(empty_game: Game):
 
 def test_fourth_down_conversion_rate_standard(game_with_mixed_downs: Game):
     """Tests fourth down conversion rate with a mix of conversions and failures."""
-    rates = calculate_fourth_down_conversion_rate(game_with_mixed_downs)
+    rates = fourth_down_conversion_rate(game_with_mixed_downs)
     # KC: 1 converted, 1 failed -> 1/2 = 0.5
     # SF: 2 converted, 1 failed -> 2/3 = 0.666...
     assert pytest.approx(rates[TeamSide.HOME]) == 0.5
@@ -163,7 +163,7 @@ def test_fourth_down_conversion_rate_standard(game_with_mixed_downs: Game):
 
 def test_fourth_down_conversion_rate_only_fourth_downs(game_only_fourth_downs: Game):
     """Tests fourth down conversion rate with only fourth down plays."""
-    rates = calculate_fourth_down_conversion_rate(game_only_fourth_downs)
+    rates = fourth_down_conversion_rate(game_only_fourth_downs)
     # KC: 1 converted, 0 failed -> 1/1 = 1.0
     # SF: 1 converted, 1 failed -> 1/2 = 0.5
     assert pytest.approx(rates[TeamSide.HOME]) == 1.0
@@ -171,22 +171,22 @@ def test_fourth_down_conversion_rate_only_fourth_downs(game_only_fourth_downs: G
 
 def test_fourth_down_conversion_rate_home_no_attempts(game_fourth_down_home_no_attempts: Game):
     """Tests fourth down conversion rate when home team has no attempts."""
-    rates = calculate_fourth_down_conversion_rate(game_fourth_down_home_no_attempts)
+    rates = fourth_down_conversion_rate(game_fourth_down_home_no_attempts)
     assert rates[TeamSide.HOME] == 0.0
     assert pytest.approx(rates[TeamSide.AWAY]) == 0.5 # 1/2
 
 def test_fourth_down_conversion_rate_away_no_attempts(game_fourth_down_away_no_attempts: Game):
     """Tests fourth down conversion rate when away team has no attempts."""
-    rates = calculate_fourth_down_conversion_rate(game_fourth_down_away_no_attempts)
+    rates = fourth_down_conversion_rate(game_fourth_down_away_no_attempts)
     assert pytest.approx(rates[TeamSide.HOME]) == 0.5 # 1/2
     assert rates[TeamSide.AWAY] == 0.0
 
 def test_fourth_down_conversion_rate_no_attempts_at_all(game_no_conversion_attempts: Game):
     """Tests fourth down conversion rate when no 4th down attempts occur."""
-    rates = calculate_fourth_down_conversion_rate(game_no_conversion_attempts)
+    rates = fourth_down_conversion_rate(game_no_conversion_attempts)
     assert rates[TeamSide.HOME] == 0.0
     assert rates[TeamSide.AWAY] == 0.0
 
 def test_fourth_down_conversion_rate_empty_game(empty_game: Game):
     """Tests fourth down conversion rate with an empty game."""
-    rates = calculate_fourth_down_conversion_rate(empty_game)
+    rates = fourth_down_conversion_rate(empty_game)
