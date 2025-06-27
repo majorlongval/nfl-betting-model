@@ -1,12 +1,19 @@
 from pydantic import BaseModel
 
 from typing import Iterator, Optional, Union, List, Any
+from enum import Enum
+
+class TeamSide(Enum):
+    HOME = "HOME"
+    AWAY = "AWAY"
 
 class Play(BaseModel):
     posteam: Optional[str] = None
     down: Optional[int] = None
     third_down_converted: bool = False
     third_down_failed: bool = False
+    fourth_down_converted: bool = False
+    fourth_down_failed: bool = False
 
 class Game(BaseModel):
     game_id: str

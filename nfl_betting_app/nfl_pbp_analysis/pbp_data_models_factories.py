@@ -1,8 +1,9 @@
 import pandas as pd
 from .pbp_data_models import Game, Play
 
-REQUIRED_COLS = ['game_id', 'home_team', 'away_team', 'posteam', 'down', 
-                         'third_down_converted', 'third_down_failed']
+REQUIRED_COLS = ['game_id', 'home_team', 'away_team', 'posteam', 'down',
+                         'third_down_converted', 'third_down_failed',
+                         'fourth_down_converted', 'fourth_down_failed']
 
 def game_from_single_game_dataframe(data_frame: pd.DataFrame)-> Game: 
     if not all(col in data_frame.columns for col in REQUIRED_COLS):
