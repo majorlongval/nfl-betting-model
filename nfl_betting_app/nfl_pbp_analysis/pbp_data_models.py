@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from typing import Iterator, Optional, Union, List, Any
+from typing import Iterator, Optional, Union, List, Any, Callable, Tuple, Dict
 from enum import Enum
 
 class TeamSide(Enum):

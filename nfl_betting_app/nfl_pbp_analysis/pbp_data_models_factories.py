@@ -64,12 +64,17 @@ def game_from_single_game_dataframe(data_frame: pd.DataFrame)-> Game:
         
     play_objects = []
     for _, row in data_frame.iterrows():
-        play_data = {
-            'posteam': row.get('posteam'),
-            'down': row.get('down'),
-            'touchdown': _create_touchdown(row),
-            **row.to_dict() # Pass all other fields like yards, conversions, etc.
-        }
+        # Start with all the raw data from the row
+        play_data = row.to_dict()
+        
+        # Explicitly handle fields that need transformation or validation
+        # Convert potential NaN in 'down' to None for Pydantic
+        if pd.isna(play_data.get('down')):
+            play_data['down'] = None
+            
+        # Overwrite the raw 'touchdown' column (0.0/1.0) with the structured Touchdown object
+        play_data['touchdown'] = _create_touchdown(row)
+        
         play_objects.append(Play(**play_data))
 
     return Game(

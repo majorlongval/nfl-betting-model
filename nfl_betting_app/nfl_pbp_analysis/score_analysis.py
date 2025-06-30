@@ -1,27 +1,37 @@
 from typing import Dict
 from .pbp_data_models import Game, TeamSide, TouchdownType
-
-def _touchdowns(game: Game, type: TouchdownType) -> Dict[TeamSide, int]:
-    home_total = 0
-    away_total = 0
-
-    for play in game.plays:
-        # Check if touchdown_info exists and its type matches
-        if play.touchdown and play.touchdown.type == type:
-            if play.touchdown.scoring_team == TeamSide.HOME:
-                home_total += 1
-            elif play.touchdown.scoring_team == TeamSide.AWAY:
-                away_total += 1
-    return {TeamSide.HOME: home_total, TeamSide.AWAY: away_total}
+from .utils import count_plays_for_team, flip_perspectives
 
 def passing_touchdowns(game: Game) -> Dict[TeamSide, int]:
-    return _touchdowns(game, TouchdownType.PASSING)
+    return count_plays_for_team(
+        game,
+        predicate=lambda play: play.touchdown is not None and play.touchdown.type == TouchdownType.PASSING,
+        team_identifier=lambda play: play.touchdown.scoring_team if play.touchdown else None
+    )
 
 def rushing_touchdowns(game: Game) -> Dict[TeamSide, int]:
-    return _touchdowns(game, TouchdownType.RUSHING)
+    return count_plays_for_team(
+        game,
+        predicate=lambda play: play.touchdown is not None and play.touchdown.type == TouchdownType.RUSHING,
+        team_identifier=lambda play: play.touchdown.scoring_team if play.touchdown else None
+    )
 
 def defence_touchdowns(game: Game) -> Dict[TeamSide, int]:
-    return _touchdowns(game, TouchdownType.DEFENCE)
+    return count_plays_for_team(
+        game,
+        predicate=lambda play: play.touchdown is not None and play.touchdown.type == TouchdownType.DEFENCE,
+        team_identifier=lambda play: play.touchdown.scoring_team if play.touchdown else None
+    )
 
 def special_teams_touchdowns(game: Game) -> Dict[TeamSide, int]:
-    return _touchdowns(game, TouchdownType.SPECIAL_TEAMS)
+    return count_plays_for_team(
+        game,
+        predicate=lambda play: play.touchdown is not None and play.touchdown.type == TouchdownType.SPECIAL_TEAMS,
+        team_identifier=lambda play: play.touchdown.scoring_team if play.touchdown else None
+    )
+
+def passing_touchdowns_allowed(game: Game) -> Dict[TeamSide, int]:
+    return flip_perspectives(passing_touchdowns(game))
+
+def rushing_touchdowns_allowed(game: Game) -> Dict[TeamSide, int]:
+    return flip_perspectives(rushing_touchdowns(game))

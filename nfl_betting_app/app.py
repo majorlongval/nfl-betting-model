@@ -2,10 +2,6 @@
 # The main orchestrator for the NFL betting application.
 
 # Import our custom application modules
-from nfl_betting_app.google_drive_handler import (
-    download_file_from_drive,
-    upload_file_to_drive,
-)
 from nfl_betting_app.data_retriever import update_raw_pbp_data
 from nfl_betting_app.data_handler import load_raw_pbp_data
 from nfl_betting_app.feature_engineering import create_final_feature_set
@@ -16,38 +12,22 @@ import os
 def run_data_pipeline():
     """
     Handles the complete data engineering workflow:
-    1. Syncs raw data FROM Google Drive.
-    2. Updates raw data FROM the web.
-    3. Generates processed feature set FROM raw data.
-    4. Syncs ALL updated data TO Google Drive.
+    1. Updates raw data FROM the web.
+    2. Generates processed feature set FROM raw data.
     """
     print("--- Running Full Data Pipeline ---")
 
-    # === STEP 1: Sync RAW Data from Google Drive ===
-    print("\n[Step 1/4] Syncing RAW data from Google Drive...")
-    if config.GDRIVE_RAW_DATA_FOLDER_ID != "YOUR_RAW_DATA_FOLDER_ID_HERE":
-        # Download the raw PBP DB
-        download_file_from_drive(
-            drive_folder_id=config.GDRIVE_RAW_DATA_FOLDER_ID,
-            file_name=config.RAW_PBP_DB_FILENAME,
-            local_save_path=config.RAW_PBP_DB_PATH,
-        )
-    else:
-        print(
-            "WARNING: Google Drive Folder ID for raw data not set. Skipping download."
-        )
-
-    # === STEP 2: Update RAW Data from Web ===
-    print("\n[Step 2/4] Updating local RAW data files from the web...")
+    # === STEP 1: Update RAW Data from Web ===
+    print("\n[Step 1/2] Updating local RAW data files from the web...")
     update_raw_pbp_data()
 
-    # === STEP 3: Generate PROCESSED Features ===
-    print("\n[Step 3/4] Generating PROCESSED features...")
+    # === STEP 2: Generate PROCESSED Features ===
+    print("\n[Step 2/2] Generating PROCESSED features...")
     try:
         # The PBP data is now the single source of truth for game and play information.
         pbp_df = load_raw_pbp_data()
 
-        feature_df = create_final_feature_set(pbp_df)
+        feature_df = create_final_feature_set(pbp_df, season_type='REG')
 
         os.makedirs(config.PROCESSED_DATA_DIR, exist_ok=True)
         feature_df.to_csv(config.MODEL_FEATURE_SET_PATH, index=False)
@@ -60,24 +40,6 @@ def run_data_pipeline():
             f"ERROR: A raw data file was not found. Cannot generate features. Details: {e}"
         )
         return  # Stop if we can't generate features
-
-    # === STEP 4: Sync ALL Data back to Google Drive ===
-    print("\n[Step 4/4] Uploading all updated data back to Google Drive...")
-    # Upload raw files
-    if config.GDRIVE_RAW_DATA_FOLDER_ID != "YOUR_RAW_DATA_FOLDER_ID_HERE":
-        upload_file_to_drive(config.RAW_PBP_DB_PATH, config.GDRIVE_RAW_DATA_FOLDER_ID)
-    else:
-        print("WARNING: Raw data Google Drive ID not set. Skipping raw file upload.")
-
-    # Upload processed file
-    if config.GDRIVE_PROCESSED_DATA_FOLDER_ID != "YOUR_PROCESSED_DATA_FOLDER_ID_HERE":
-        upload_file_to_drive(
-            config.MODEL_FEATURE_SET_PATH, config.GDRIVE_PROCESSED_DATA_FOLDER_ID
-        )
-    else:
-        print(
-            "WARNING: Processed data Google Drive ID not set. Skipping feature file upload."
-        )
 
     print("\n--- Data Pipeline Complete ---")
 
